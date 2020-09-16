@@ -1,11 +1,8 @@
 # SoqlAndRest
 Show how you can use RestApi to help apex to work with code limits
 
-
-
-1 : First install or create the class within the repository
-2 : Follow the following steps to test and see the limitation of Apex and how you can overcome them if needed
-
+## Step 1 : First install or create the class within the repository
+```apex
 //Step 1 : create data if needed in a scratch org or a dedicated sandbox 
 List<Case> cases = new List<Case>();
 for(integer i=0;i<10;i++){
@@ -14,13 +11,16 @@ for(integer i=0;i<10;i++){
 	cases.add(new Case (reason='test3'));
 }
 insert cases;
+```
 
 
 ## Step 2 : execute the below code and display only the debug log information. this use case show that everything work as expected
 ### RestSoqlExamples.soqlAggregateWorkFine();
-- system.debug([select count() from case ]);
-- system.debug(Limits.getQueryRows()+'/'+getLimitQueryRows());
-- system.debug('we can see here that we just have consume 1 row , aggregation without group by work fine');
+```apex
+system.debug([select count() from case ]);
+system.debug(Limits.getQueryRows()+'/'+getLimitQueryRows());
+system.debug('we can see here that we just have consume 1 row , aggregation without group by work fine');
+```
 ### Expected results :
 - executing : [select count() from case ]
 - found records : 37
@@ -29,10 +29,12 @@ insert cases;
 
 ## Step 3 : execute the below code and display only the debug log information.This use case show that using group by is consuming "too many rows" , it can become an issue while in production if there is too many records to process
 ### RestSoqlExamples.soqlAggregateWithGroupByIssue();
-- Integer nbRecords = [select reason from case group by reason].size();
-- system.debug('nb records retrieved : '+nbRecords);
-- system.debug(Limits.getQueryRows()+'/'+Limits.getLimitQueryRows());
-- system.debug('we can see here that we just have consume '+Limits.getQueryRows()+' row but we are only retrieving '+nbRecords+' records, \naggregation with group count all process records through the group by');        
+```apex
+Integer nbRecords = [select reason from case group by reason].size();
+system.debug('nb records retrieved : '+nbRecords);
+system.debug(Limits.getQueryRows()+'/'+Limits.getLimitQueryRows());
+system.debug('we can see here that we just have consume '+Limits.getQueryRows()+' row but we are only retrieving '+nbRecords+' records, \naggregation with group count all process records through the group by');        
+```
 ### Expected results :
 - nb records retrieved : 8
 - 37/50000
@@ -42,11 +44,12 @@ insert cases;
 
 ## Step 4 : execute the following code and display only the debug log information.This use case show that using a rest operation to retrieve information is reducing the number of consumed rows
 ### RestSoqlExamples.soqlAggregateWithGroupByThroughRest();
-
+```apex
 Integer nbRecords = RestApiUtil.execute('select reason from case group by reason',false).size();
 system.debug('nb records retrieved : '+nbRecords);
 system.debug(Limits.getQueryRows()+'/'+Limits.getLimitQueryRows());
 system.debug('we can see here that we just have consume '+Limits.getQueryRows()+' row but we are retrieving '+nbRecords+' records, aggregation with group count all process records through the group by');
+```
 ### Expected results :
 - nb records retrieved : 6
 - 0/50000
