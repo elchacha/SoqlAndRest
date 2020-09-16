@@ -70,22 +70,26 @@ system.debug('we can see here that we just have consume '+Limits.getQueryRows()+
 
 ## Step 6 : WARNING. Callout operation should be done prior to any dml operation. The below code will **NOW** work
 ### RestSoqlExamples.CalloutBeforeDML();
-- // CallOut operation before DML . All is good
-- Integer nbRecords = RestApiUtil.execute('select reason from case group by reason',false).size();
-- system.debug('nb records retrieved : '+nbRecords);
-- // DML Operation
-- insert (new Case (reason='test5'));
+```apex
+// CallOut operation before DML . All is good
+Integer nbRecords = RestApiUtil.execute('select reason from case group by reason',false).size();
+system.debug('nb records retrieved : '+nbRecords);
+// DML Operation
+insert (new Case (reason='test5'));
+```
 ### Expected results :
 - nb records retrieved : 7
 
 
 ## Step 7 : WARNING. Callout operation should be done prior to any dml operation. The below code will work but we are the transaction rollback in case of error
 ### RestSoqlExamples.CalloutAfterDMLThroughRest();
-- // DML Operation
-- RestApiUtil.restUpsert(new Case (reason='test6'));
-- //insert (new Case (reason='test4'));
-- // CallOut operation after DML . Avoid this
-- Integer nbRecords = RestApiUtil.execute('select reason from case group by reason',false).size();
+```apex
+// DML Operation
+RestApiUtil.restUpsert(new Case (reason='test6'));
+//insert (new Case (reason='test4'));
+// CallOut operation after DML . Avoid this
+Integer nbRecords = RestApiUtil.execute('select reason from case group by reason',false).size();
+```
 ### Expected results :
 - restUpsertEndpoint > https://fcha.my.salesforce.com/services/data/v47.0/sobjects/Case
 - body>{"attributes":{"type":"Case"},"Reason":"test6"}
@@ -94,4 +98,4 @@ system.debug('we can see here that we just have consume '+Limits.getQueryRows()+
 - nb records retrieved : 8
 
 
-system.debug('nb records retrieved : '+nbRecords);
+
